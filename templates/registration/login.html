@@ -1,0 +1,110 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+  
+  /* Background styling */
+  body {
+      background: linear-gradient(135deg, #ececec 0%, #f8f9fa 100%);
+      font-family: 'Poppins', sans-serif;
+  }
+
+  .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f1f1f1;
+  }
+
+  .login-card {
+      width: 100%;
+      max-width: 400px;
+      background-color: #ffffff;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      padding: 30px;
+      transition: box-shadow 0.3s ease;
+  }
+
+  .login-card:hover {
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .login-header {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+  }
+
+  .login-body {
+      display: flex;
+      flex-direction: column;
+  }
+
+  .login-body form {
+      width: 100%;
+  }
+
+  .btn-login {
+      background-color: #007bff;
+      border: none;
+      width: 100%;
+      font-size: 1.1rem;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 20px;
+      color: white;
+      transition: background-color 0.3s ease;
+  }
+
+  .btn-login:hover {
+      background-color: #5aa1ff;
+      color: #fff;
+  }
+
+  .login-footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1rem;
+  }
+
+  .login-footer a {
+      color: #007bff;
+      text-decoration: none;
+  }
+
+  .login-footer a:hover {
+      text-decoration: underline;
+  }
+</style>
+
+<!-- templates/registration/login.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      LOGIN
+    </div>
+    <div class="login-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-login">Log In</button>
+      </form>
+    </div>
+    <div class="login-footer">
+      <a href="{% url 'password_reset' %}">Forgot Password?</a><br>
+      Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

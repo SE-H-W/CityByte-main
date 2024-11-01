@@ -1,0 +1,399 @@
+
+
+{% extends "../base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}City{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    font-family: Arial, sans-serif;
+  }
+
+  .card {
+    background-color: #34495e;
+    color: #ecf0f1;
+    border-radius: 8px;
+    border: none;
+    margin: 1rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #1abc9c;
+    color: #2c3e50;
+  }
+
+  #weather > .card-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+
+  #weather > .card-subtitle {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+  }
+
+  .card-text {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .card-title a {
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .card-title a:hover {
+    color: #f39c12;
+  }
+
+  .list-group,
+  .list-group-item {
+    color: inherit;
+    background-color: transparent;
+    margin: 0;
+    border: none;
+  }
+
+  .checked {
+    color: #e74c3c;
+  }
+
+  .fav {
+    font-size: 2.5rem;
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    margin: 16px;
+    cursor: pointer;
+    color: #e74c3c;
+  }
+
+  .fav:hover {
+    transform: scale(1.1);
+  }
+
+  .section-heading {
+    font-size: 2rem;
+    color: #f39c12;
+    text-align: center;
+    margin: 3rem 0 1rem;
+  }
+
+  .btn-primary {
+    background-color: #f39c12;
+    border: none;
+    color: #2c3e50;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+
+  .btn-primary:hover {
+    background-color: #e67e22;
+    transform: scale(1.05);
+  }
+
+  .comment-section {
+    margin-top: 3rem;
+    padding: 1rem;
+    background-color: #34495e;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 3rem auto;
+  }
+
+  .comment-section h1 {
+    font-size: 1.8rem;
+    color: #f39c12;
+    text-align: center;
+  }
+
+  .comment-section hr {
+    border-top: 1px solid #bdc3c7;
+  }
+
+  .comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .comment-form button {
+    align-self: center;
+  }
+
+  .news-button-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+</style>
+
+<div class="container-fluid" style="padding: 0;">
+  <div
+    class="p-5 text-center bg-image"
+    style="background-image: url('{{ photo_link }}'); background-size: cover; background-position: center; height: 50vh;"
+  >
+    <div class="mask">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <div class="text-white">
+          {% if weather_info %}
+          <h1 style="font-size: 5rem; color: #f39c12;">
+            {{ weather_info.city_name }}
+          </h1>
+          <h4 class="mb-3">
+            {{ weather_info.state_code }}, {{ weather_info.country_code }}
+          </h4>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width: 100%;">
+    <span
+      class="fa fa-heart fav"
+      id="fav-toggle"
+      onClick="favToggle(event)"
+    ></span>
+  </div>
+
+  {% if weather_info %}
+  <div class="d-flex flex-wrap justify-content-center" style="margin: 2rem;">
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Temperature</div>
+        <div class="card-text">{{ weather_info.temp }} °C</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">RealFeel Temperature</div>
+        <div class="card-text">{{ weather_info.app_temp }} °C</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Pressure</div>
+        <div class="card-text">{{ weather_info.pres }} mb</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Wind Speed</div>
+        <div class="card-text">{{ weather_info.wind_spd }} m/s</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Wind Direction</div>
+        <div class="card-text">{{ weather_info.wind_dir }} °</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Cloud Coverage</div>
+        <div class="card-text">{{ weather_info.clouds }} %</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Precipitation</div>
+        <div class="card-text">{{ weather_info.precip }} mm/hr</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">UV Index</div>
+        <div class="card-text">{{ weather_info.uv }}</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Sunrise</div>
+        <div class="card-text">{{ weather_info.sunrise }} AM</div>
+      </div>
+    </div>
+    <div class="card text-center" style="width: 10rem;">
+      <div class="card-body">
+        <div class="card-subtitle">Sunset</div>
+        <div class="card-text">{{ weather_info.sunset }} PM</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section">
+    <h2 class="section-heading">Create Your Itinerary</h2>
+
+    <form method="POST" action="{% url 'city_info' city %}" class="text-center">
+      {% csrf_token %}
+      <label for="days" style="font-size: 1.2rem; color: #f39c12;">
+        Enter the number of days for the itinerary:
+      </label>
+      <input
+        type="number"
+        id="days"
+        name="days"
+        min="1"
+        required
+        style="margin-left: 0.5rem; padding: 5px; border-radius: 4px;"
+      />
+      <button type="submit" class="btn btn-primary mt-2">
+        Create Itinerary
+      </button>
+    </form>
+
+    {% if itinerary %}
+    <div class="mt-4 text-center">
+      <h3>Your Itinerary for {{ city }}</h3>
+      <div>{{ itinerary }}</div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <h2 class="section-heading">Top Rated Dining Spots</h2>
+  <div class="d-flex flex-wrap justify-content-center" style="margin: 1rem;">
+    {% for place in dining_info.results %}
+    <div class="card" style="width: 18rem;">
+      <img
+        src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}"
+        class="card-img-top"
+        alt="{{ place.name }}"
+      />
+      <div class="card-body">
+        <h5 class="card-title">
+          <a
+            href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}+{{ weather_info.city_name|urlencode }}+{{ weather_info.state_code|urlencode }}"
+            target="_blank"
+            >{{ place.name }}</a
+          >
+        </h5>
+        <p class="card-text">{{ place.location.formatted_address }}</p>
+      </div>
+      <div class="card-footer">{{ place.categories.0.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="section-heading">Top Landmark Spots</h2>
+  <div class="d-flex flex-wrap justify-content-center" style="margin: 1rem;">
+    {% for place in outdoor_info.results %}
+    <div class="card" style="width: 18rem;">
+      <img
+        src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}"
+        class="card-img-top"
+        alt="{{ place.name }}"
+      />
+      <div class="card-body">
+        <h5 class="card-title">
+          <a
+            href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}+{{ weather_info.city_name|urlencode }}+{{ weather_info.state_code|urlencode }}"
+            target="_blank"
+            >{{ place.name }}</a
+          >
+        </h5>
+        <p class="card-text">{{ place.location.formatted_address }}</p>
+      </div>
+      <div class="card-footer">{{ place.categories.0.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="section-heading">Top Arts Spots</h2>
+  <div class="d-flex flex-wrap justify-content-center" style="margin: 1rem;">
+    {% for place in arts_info.results %}
+    <div class="card" style="width: 18rem;">
+      <img
+        src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}"
+        class="card-img-top"
+        alt="{{ place.name }}"
+      />
+      <div class="card-body">
+        <h5 class="card-title">
+          <a
+            href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}+{{ weather_info.city_name|urlencode }}+{{ weather_info.state_code|urlencode }}"
+            target="_blank"
+            >{{ place.name }}</a
+          >
+        </h5>
+        <p class="card-text">{{ place.location.formatted_address }}</p>
+      </div>
+      <div class="card-footer">{{ place.categories.0.name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if airport_info.results %}
+  <h2 class="section-heading">Airports</h2>
+  <div class="d-flex flex-wrap justify-content-center" style="margin: 1rem;">
+    {% for place in airport_info.results %}
+    <div class="card" style="width: 18rem;">
+      <img
+        class="airport-info-img"
+        src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}"
+        class="card-img-top"
+        alt="{{ place.name }}"
+      />
+      <div class="card-body">
+        <h5 class="card-title">
+          <a
+            href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}+{{ weather_info.city_name|urlencode }}+{{ weather_info.state_code|urlencode }}"
+            target="_blank"
+            >{{ place.name }}</a
+          >
+        </h5>
+        <p class="card-text">{{ place.location.formatted_address }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="news-button-container">
+    <a href="{% url 'city_news' city=city country=country %}" class="btn btn-primary">
+      View Latest News in {{ city }}
+    </a>
+  </div>
+
+  <div class="comment-section" id="comments">
+    <h1>Comments</h1>
+    <hr />
+    <form
+      method="post"
+      action="{% url 'info_page' %}?city={{ city }}&country={{country}}"
+      class="comment-form"
+    >
+      {% csrf_token %} {{commentForm|crispy}}
+      <button class="btn btn-primary">Comment</button>
+    </form>
+
+    {% if comments %}
+    <hr />
+    <div>
+      {% for comment in comments %}
+      <div>
+        <p><b>{{comment.author.username|title}}</b></p>
+        <p>{{comment.comment}}</p>
+        <p>{{comment.created_on}}</p>
+        <hr />
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

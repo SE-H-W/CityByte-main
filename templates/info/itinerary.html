@@ -1,0 +1,48 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}Itinerary for {{ city }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="section bg-light p-5 rounded shadow-lg">
+        <h2 class="section-heading text-center font-weight-bold mb-4">Itinerary for {{ city }}</h2>
+        
+        <!-- Display the itinerary as HTML, after converting from markdown -->
+        {% if itinerary %}
+            <div class="itinerary-content text-dark">
+                {{ itinerary|safe }}
+            </div>
+        {% else %}
+            <p class="text-center text-muted">No itinerary available. Please go back and try again.</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .section-heading {
+        font-size: 2rem;
+        color: #0056b3;
+        font-weight: bold;
+    }
+    .itinerary-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+    .btn-primary {
+        background-color: #0056b3;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #004494;
+    }
+    .container {
+        max-width: 800px;
+        margin: auto;
+    }
+</style>
+{% endblock %}

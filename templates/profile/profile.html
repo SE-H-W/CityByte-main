@@ -1,0 +1,131 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Profile Page{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Page background styling */
+    body {
+        background: linear-gradient(135deg, #ececec 0%, #f5f5f5 100%);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Container styling */
+    .container {
+        color: #333;
+        font-size: 1.5rem;
+        margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    /* Heading styling */
+    h1 {
+        font-size: 2.5rem;
+        color: #333;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+    }
+
+    /* Lists container */
+    .lists-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+
+    /* Card styles */
+    .card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        transition: box-shadow 0.3s ease;
+        max-width: 320px;
+    }
+
+    .card:hover {
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        font-size: 1.3rem;
+        font-weight: 600;
+        background-color: #007bff;
+        color: #fff;
+        padding: 15px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .list-group-item {
+        padding: 12px 20px;
+        font-size: 1rem;
+        background-color: #f9f9f9;
+        border: none;
+        color: #333;
+        transition: background-color 0.2s ease;
+    }
+
+    .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+    .list-group-item a {
+        text-decoration: none;
+        color: #007bff;
+        transition: color 0.3s ease;
+    }
+
+    .list-group-item a:hover {
+        color: #0056b3;
+    }
+
+    /* Empty state styling */
+    .empty-message {
+        font-style: italic;
+        color: #777;
+        padding: 20px;
+    }
+</style>
+
+<div class="container">
+    <h1>Hi, {{user.username|title}}</h1>
+
+    <div class="lists-container">
+        <!-- Favourite Cities Card -->
+        <div class="card">
+            <div class="card-header">
+                Your Favourite Cities
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if favCities %}
+                    {% for city in favCities %}
+                        <li class="list-group-item"><a href="{% url 'info_page' %}?city={{city.city}}&country={{city.country}}">{{city.city}}, {{city.country}}</a></li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item empty-message">You don't have any favourite cities yet. Start exploring!</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <!-- Popular Cities Card -->
+        <div class="card">
+            <div class="card-header">
+                Top 10 Popular Cities
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if popularCities %}
+                    {% for city in popularCities %}
+                        <li class="list-group-item"><a href="{% url 'info_page' %}?city={{city.city_name}}&country={{city.country_name}}">{{city.city_name}}, {{city.country_name}}</a></li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item empty-message">Looks like no popular cities yet. Keep exploring!</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

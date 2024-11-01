@@ -1,0 +1,340 @@
+{% extends '../base.html' %}
+{% load crispy_forms_tags %}
+ 
+{% block title %}City{% endblock %}
+ 
+{% block content %}
+ 
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            border: none;
+            background-color: #36453b;
+            color: #f5f9e9;
+        }
+ 
+        .card {
+            background-color: #596869;
+            color: #f5f9e9;
+            border: none;
+            margin: 1rem;
+        }
+ 
+        .card:hover {
+            background-color: #f5f9e9;
+            color: #515751;
+        }
+ 
+        #weather > .card-text {
+            font-size: medium;
+            font-weight: bolder;
+        }
+ 
+        #weather > .card-subtitle {
+            font-size: x-small;
+        }
+ 
+        .card-text {
+            font-size: 1rem;
+            font-weight: bolder;
+        }
+ 
+        .card-title {
+            font-size: 0.75rem;
+        }
+ 
+        .list-group, .list-group-item {
+            color: inherit;
+            background-color: transparent;
+            margin: 0;
+            border: none;
+        }
+ 
+        .checked {
+            color: orange;
+        }
+ 
+        .fav{
+            font-size: 3rem;
+            position: absolute;
+            top: 15%;
+            right: 0;
+            margin: 16px;
+            cursor: pointer;
+        }
+ 
+        .fav:hover{
+            transform: scale(1.2);
+        }
+    </style>
+ 
+<div class="container-fluid" style="padding: 0;">
+    <div class="p-5 text-center bg-image" style="background-image: url('{{ photo_link }}'); background-size: cover; background-position: center; height: 50vh;">
+        <div class="mask">
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="text-white">
+                    {% if weather_info %}
+                    <h1 style="font-size: 7rem; color: antiquewhite;">{{ weather_info.city_name }}</h1>
+                    <h4 class="mb-3">{{ weather_info.state_code }}, {{ weather_info.country_code }}</h4>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <div style="width: 100%;">
+       <span class="fa fa-regular fa-heart fav" id="fav-toggle" onClick="favToggle(event)"></span>
+    </div>
+    {% if weather_info %}
+    <div class="d-flex flex-wrap" style="margin: 1rem;">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Temperature
+                </div>
+                <div class="card-text">
+                    {{ weather_info.temp }} °C
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    RealFeel Temperature
+                </div>
+                <div class="card-text">
+                    {{ weather_info.app_temp }} °C
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Pressure
+                </div>
+                <div class="card-text">
+                    {{ weather_info.pres }} mb
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item" style="padding-top: 0; padding-bottom: 0;">
+                        <div class="card-subtitle">
+                            Wind Speed
+                        </div>
+                        <div class="card-text">
+                            {{ weather_info.wind_spd }} m/s
+                        </div>
+                    </li>
+                    <li class="list-group-item" style="padding-top: 0; padding-bottom: 0;">
+                        <div class="card-subtitle">
+                            Wind Direction
+                        </div>
+                        <div class="card-text">
+                            {{ weather_info.wind_dir }} °
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Cloud Coverage
+                </div>
+                <div class="card-text">
+                    {{ weather_info.clouds }} %
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Precipitation
+                </div>
+                <div class="card-text">
+                    {{ weather_info.precip }} mm/hr
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    UV Index
+                </div>
+                <div class="card-text">
+                    {{ weather_info.uv }}
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Sunrise
+                </div>
+                <div class="card-text">
+                    {{ weather_info.sunrise }} AM
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="card-subtitle">
+                    Sunset
+                </div>
+                <div class="card-text">
+                    {{ weather_info.sunset }} PM
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section">
+        <h2 class="section-heading">Create Your Itinerary</h2>
+        
+        <!-- Form to take number of days for the itinerary -->
+        <form method="POST" action="{% url 'city_info' city %}">
+            {% csrf_token %}
+            <label for="days">Enter the number of days for the itinerary:</label>
+            <input type="number" id="days" name="days" min="1" required>
+            <button type="submit" class="btn btn-primary mt-2">Create Itinerary</button>
+        </form>
+    
+        <!-- Display the generated itinerary if available -->
+        {% if itinerary %}
+        <div class="mt-4">
+            <h3>Your Itinerary for {{ city }}</h3>
+            <div>{{ itinerary }}</div>
+        </div>
+        {% endif %}
+    </div>
+ 
+    {% endif %}
+    
+    <h2 style="margin: 4rem 0 1rem 1rem;">Top Rated Dining Spots</h2>
+    <div class="d-flex flex-wrap" style="margin: 1rem;">
+        {% for place in dining_info.results %}
+            <div class="card" style="width: 18rem;">
+                <img src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}" class="card-img-top" alt="{{ place.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}" target="_blank">{{ place.name }}</a>
+                    </h5>
+                    <p class="card-text">{{ place.location.formatted_address }}</p>
+                </div>
+                <div class="card-footer">
+                    {{ place.categories.0.name }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <h2 style="margin: 4rem 0 1rem 1rem;">Top Landmark Spots</h2>
+    <div class="d-flex flex-wrap" style="margin: 1rem;">
+        {% for place in outdoor_info.results %}
+            <div class="card" style="width: 18rem;">
+                <img src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}" class="card-img-top" alt="{{ place.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}" target="_blank">{{ place.name }}</a>
+                    </h5>
+                    <p class="card-text">{{ place.location.formatted_address }}</p>
+                </div>
+                <div class="card-footer">
+                    {{ place.categories.0.name }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <h2 style="margin: 4rem 0 1rem 1rem;">Top Arts Spots</h2>
+    <div class="d-flex flex-wrap" style="margin: 1rem;">
+        {% for place in arts_info.results %}
+            <div class="card" style="width: 18rem;">
+                <img src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}" class="card-img-top" alt="{{ place.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}" target="_blank">{{ place.name }}</a>
+                    </h5>
+                    <p class="card-text">{{ place.location.formatted_address }}</p>
+                </div>
+                <div class="card-footer">
+                    {{ place.categories.0.name }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% if airport_info.results %}
+ 
+            <h2 style="margin: 4rem 0 1rem 1rem;">Airports</h2>
+            <div class="d-flex flex-wrap" style="margin: 1rem;">
+                {% for place in airport_info.results %}
+                    <div class="card" style="width: 18rem;">
+                        <img class="airport-info-img" src="{% url 'info:place_photo' %}?fsq_id={{ place.fsq_id }}" class="card-img-top" alt="{{ place.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: 0.75rem">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ place.name|urlencode }}" target="_blank">{{ place.name }}</a>
+                            </h5>
+                            <p class="card-text" style="font-size: 1rem;">{{ place.location.formatted_address }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+ 
+    {% endif %}
+ 
+    <div class="container" id="comments" style="padding: 4px;">
+        <h1>Comments</h1>
+        <hr>
+ 
+        <!-- add comment box -->
+        <form method="post" action="{% url 'info_page' %}?city={{ city }}&country={{country}}">
+            <!-- <textarea style="width: 100%; max-width: 100%;" id="comment" placeholder="Type your comment here"></textarea> -->
+            {% csrf_token %}
+            {{commentForm|crispy}}
+            <button class="btn btn-large btn-primary">Comment</button>
+        </form>
+ 
+    {% if comments%}
+ 
+        <hr>
+        <div>
+        {% for comment in comments %}
+        <div>
+            <p><b>{{comment.author.username|title}}</b></p>
+            <p>{{comment.comment}}</p>
+            <p>{{comment.created_on}}</p>
+            <hr>
+        </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+ 
+    </div>
+ 
+</div>
+ 
+ 
+<!-- <script>
+    // if in fav list remove checked else keep it
+ 
+    var favBtn = document.getElementById("fav-toggle");
+    {% if isInFav %}
+        favBtn.classList.toggle("checked");
+        console.log("CHECKED")
+    {% endif %}
+    function favToggle(event){
+        const url = "{% url 'addToFav' %}?city={{city}}&country={{country}}"
+        fetch(url).then(function(response) {
+            return response.json();
+            }).then(function(data) {
+            console.log(data);
+            }).catch(function() {
+            console.log("Booo");
+            });
+        favBtn.classList.toggle("checked");
+ 
+    }
+</script> -->
+ 
+{% endblock %}
